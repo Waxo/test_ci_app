@@ -2,7 +2,7 @@ name: Pull request
 
 on:
   push:
-    tag:
+    tags:
       - v*
 
 jobs:

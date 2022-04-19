@@ -15,5 +15,7 @@ jobs:
           architecture: x64
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
           files: ./windows/build/runner/Release/test_ci_app.exe

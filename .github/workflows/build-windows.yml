@@ -7,11 +7,13 @@ on:
 
 jobs:
  build-windows:
-   runs-on: windows-latest
-   steps:
-     - uses: actions/checkout@v3
-     - uses: subosito/flutter-action@v2
-       with:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
         architecture: x64
-     - run: flutter config --enable-windows-desktop
-     - run: flutter build windows
+      - run: flutter config --enable-windows-desktop
+      - run: flutter build windows
+        with:
+          files: ./windows/build/runner/Release/test_ci_app.exe

@@ -19,11 +19,10 @@ jobs:
     #- run: ls ./build/ios/
     #- run: echo "#####"
     #- run: ls ./build/ios/iphoneos
-    - run: cp ./build/ios/iphoneos/Runner.app .
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-          files: Runner.app
+          files: build/ios/iphoneos/Runner.app
 
   build-windows:
     runs-on: windows-latest
@@ -33,12 +32,18 @@ jobs:
         with:
           architecture: x64
       - run: flutter config --enable-windows-desktop
-      - run: flutter build windows
-      - run: tree ./build/windows
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: ./windows/build/runner/Release/test_ci_app.exe
+      - run: flutter build windows --release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: test-ci-${{github.ref_name}}-windows.zip
+          directory: build/windows/runner/Release
+      - run: tree ./build/windows/runner/
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: test-ci-${{github.ref_name}}-windows.zip
 
   build-android:
     runs-on: ubuntu-latest

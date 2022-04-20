@@ -22,10 +22,16 @@ jobs:
           type: 'zip'
           filename: test-ci-${{github.ref_name}}-windows.zip
           directory: build/windows/runner/Release
-      - run: tree ./build/windows/runner/
-      - run: ls
-      - name: Release
-        uses: softprops/action-gh-release@v1
+
+      - name : Publish
+        uses: actions/upload-artifact@v3
         with:
-          fail_on_unmatched_files: true
-          files: test-ci-${{github.ref_name}}-windows.zip
+          name: release-windows
+          path: build
+      # - run: tree ./build/windows/runner/
+      # - run: ls
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     fail_on_unmatched_files: true
+      #     files: test-ci-${{github.ref_name}}-windows.zip

@@ -6,11 +6,11 @@ on:
       - v*
 
 jobs:
-  # build-macos:
-  #   uses: ./.github/workflows/ios.yml
+  iphoneos:
+    uses: ./.github/workflows/_build-iphoneos.yml
 
-  build-windows:
-    uses: ./.github/workflows/windows.yml
+  windows:
+    uses: ./.github/workflows/_build-windows.yml
 
   # build-android:
   #   uses: ./github/workflows/android.yml

@@ -17,21 +17,14 @@ jobs:
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows --release
       - run: flutter pub run msix:create --install-certificate false
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: test-ci-${{github.ref_name}}-windows.zip
-          directory: build/windows/runner/Release
-      - name : Publish
-        uses: actions/upload-artifact@v3
-        with:
-          name: release-windows
-          path: build
-      - name: Release
+      # - name : Publish artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: release-windows
+      #     path: build
+      - name: Release windows
         uses: softprops/action-gh-release@v1
         with:
           fail_on_unmatched_files: true
           files: |
             ./build/windows/runner/Release/test_ci_app.msix
-            ./build/windows/runner/Release/test-ci-${{github.ref_name}}-windows.zip

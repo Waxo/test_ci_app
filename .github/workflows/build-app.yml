@@ -19,6 +19,7 @@ jobs:
     #- run: ls ./build/ios/
     #- run: echo "#####"
     #- run: ls ./build/ios/iphoneos
+    - run: cp ./build/ios/iphoneos/Runner.app .
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
@@ -33,7 +34,7 @@ jobs:
           architecture: x64
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows
-      - run: tree ./build
+      - run: tree ./build/windows
       # - name: Release
       #   uses: softprops/action-gh-release@v1
       #   with:
@@ -54,5 +55,5 @@ jobs:
     #- run: flutter test
     - run: flutter build apk
     - run: flutter build appbundle
-    - run: tree ./build
+    - run: tree ./build/app
     

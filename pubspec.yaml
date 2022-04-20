@@ -93,4 +93,3 @@ msix_config:
   display_name: Test Flutter
   publisher_display_name: Waxo
   identify_name: TestCI.app
-  msix_version: 0.0.32

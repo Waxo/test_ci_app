@@ -1,0 +1,31 @@
+name: Build Windows
+
+on: workflow_call
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          architecture: x64
+      - uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: ${{runner.os}}-flutter-cache-${{env.flutter_version}}
+      - run: flutter config --enable-windows-desktop
+      - run: flutter build windows --release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: test-ci-${{github.ref_name}}-windows.zip
+          directory: build/windows/runner/Release
+      - run: tree ./build/windows/runner/
+      - run: ls
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          fail_on_unmatched_files: true
+          files: test-ci-${{github.ref_name}}-windows.zip

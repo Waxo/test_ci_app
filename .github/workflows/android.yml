@@ -1,0 +1,25 @@
+name: Build android
+
+on: workflow_call
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3 
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '2.10.4'
+    - uses: actions/cache@v3
+      with:
+        path: /opt/hostedtoolcache/flutter
+        key: ${{runner.os}}-flutter-cache-${{env.flutter_version}}
+    - run: flutter pub get
+    #- run: flutter test
+    - run: flutter build apk
+    - run: flutter build appbundle
+    - run: tree ./build/app

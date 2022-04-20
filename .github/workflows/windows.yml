@@ -16,22 +16,22 @@ jobs:
           cache-key: ${{runner.os}}-flutter-cache-2.10.x
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows --release
+      - run: flutter pub run msix:create
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
           filename: test-ci-${{github.ref_name}}-windows.zip
           directory: build/windows/runner/Release
-
       - name : Publish
         uses: actions/upload-artifact@v3
         with:
           name: release-windows
           path: build
-      # - run: tree ./build/windows/runner/
-      # - run: ls
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     fail_on_unmatched_files: true
-      #     files: test-ci-${{github.ref_name}}-windows.zip
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          fail_on_unmatched_files: true
+          files: |
+            ./build/windows/runner/Release/test-ci-app.exe
+            ./build/windows/runner/Release/test-ci-${{github.ref_name}}-windows.zip

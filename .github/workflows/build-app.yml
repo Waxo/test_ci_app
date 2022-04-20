@@ -6,8 +6,8 @@ on:
       - v*
 
 jobs:
-  build-macos:
-    uses: ./.github/workflows/ios.yml
+  # build-macos:
+  #   uses: ./.github/workflows/ios.yml
 
   build-windows:
     uses: ./.github/workflows/windows.yml

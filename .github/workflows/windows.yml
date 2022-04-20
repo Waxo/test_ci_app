@@ -16,7 +16,7 @@ jobs:
           cache-key: ${{runner.os}}-flutter-cache-2.10.x
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows --release
-      - run: flutter pub run msix:create
+      - run: flutter pub run msix:create --install-certificate false
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:

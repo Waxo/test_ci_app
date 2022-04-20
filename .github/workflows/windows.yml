@@ -33,5 +33,5 @@ jobs:
         with:
           fail_on_unmatched_files: true
           files: |
-            ./build/windows/runner/Release/test-ci-app.exe
+            ./build/windows/runner/Release/test_ci_app.msix
             ./build/windows/runner/Release/test-ci-${{github.ref_name}}-windows.zip

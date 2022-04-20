@@ -20,12 +20,11 @@ jobs:
     - run: flutter pub get
     #- run: flutter test
     - run: flutter build ios --release --no-codesign
-    #- run: ls ./build/ios/
-    #- run: echo "#####"
-    #- run: ls ./build/ios/iphoneos
+    - run: tree build/ios/iphoneos/
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
+        fail_on_unmatched_files: true
         files: build/ios/iphoneos/Runner.app
 
   build-windows:
@@ -48,29 +47,31 @@ jobs:
           filename: test-ci-${{github.ref_name}}-windows.zip
           directory: build/windows/runner/Release
       - run: tree ./build/windows/runner/
+      - run: ls
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          fail_on_unmatched_files: true
           files: test-ci-${{github.ref_name}}-windows.zip
 
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3 
-    - uses: actions/setup-java@v2
-      with:
-        distribution: 'zulu'
-        java-version: '11'
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '2.10.4'
-    - uses: actions/cache@v3
-      with:
-        path: /opt/hostedtoolcache/flutter
-        key: ${{runner.os}}-flutter-cache-${{env.flutter_version}}
-    - run: flutter pub get
-    #- run: flutter test
-    - run: flutter build apk
-    - run: flutter build appbundle
-    - run: tree ./build/app
+  # build-android:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3 
+  #   - uses: actions/setup-java@v2
+  #     with:
+  #       distribution: 'zulu'
+  #       java-version: '11'
+  #   - uses: subosito/flutter-action@v2
+  #     with:
+  #       flutter-version: '2.10.4'
+  #   - uses: actions/cache@v3
+  #     with:
+  #       path: /opt/hostedtoolcache/flutter
+  #       key: ${{runner.os}}-flutter-cache-${{env.flutter_version}}
+  #   - run: flutter pub get
+  #   #- run: flutter test
+  #   - run: flutter build apk
+  #   - run: flutter build appbundle
+  #   - run: tree ./build/app
     

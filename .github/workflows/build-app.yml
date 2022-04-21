@@ -6,8 +6,8 @@ on:
       - v*
 
 jobs:
-  macos:
-    uses: ./.github/workflows/_build-macos.yml
+  # macos:
+  #   uses: ./.github/workflows/_build-macos.yml
 
   # iphoneos:
   #   uses: ./.github/workflows/_build-iphoneos.yml
@@ -15,6 +15,6 @@ jobs:
   # windows:
   #   uses: ./.github/workflows/_build-windows.yml
 
-  # build-android:
-  #   uses: ./github/workflows/android.yml
+  android:
+    uses: ./.github/workflows/_build-android.yml
     

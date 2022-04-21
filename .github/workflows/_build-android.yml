@@ -13,13 +13,16 @@ jobs:
         java-version: '11'
     - uses: subosito/flutter-action@v2
       with:
-        flutter-version: '2.10.4'
-    - uses: actions/cache@v3
-      with:
-        path: /opt/hostedtoolcache/flutter
-        key: ${{runner.os}}-flutter-cache-${{env.flutter_version}}
+        flutter-version: '2.10.x'
+        architecture: x64
+        channel: stable
+        cache: true
+        cache-key: ${{runner.os}}-flutter-cache-2.10.x
     - run: flutter pub get
-    #- run: flutter test
     - run: flutter build apk
     - run: flutter build appbundle
-    - run: tree ./build/app
+    - name : Publish artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-android
+        path: build

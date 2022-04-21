@@ -21,11 +21,11 @@ jobs:
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: flutter build macos --release
-      # - run: |
-      #     xcrun productbuild --component build/ios/iphoneos/Runner.app /Applications/ TestCIApp.pkg
-# APP_NAME=$(find $(pwd) -name "*.app")
-# PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
-# SWAGGY UNCOMMENTED LINE HERE
+      - run: |
+          APP_NAME=$(find $(pwd) -name "*.app")
+          PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
+          xcrun productbuild --component "$APP_NAME" /Applications/ TestCIApp.pkg
+
 # INSTALLER_CERT_NAME=$(keychain list-certificates \
 #           | jq '.[0]
 #             | select(.common_name

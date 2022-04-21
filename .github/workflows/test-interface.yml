@@ -27,5 +27,7 @@ on:
 
 jobs:
   deploy-windows:
-    - if: ${{github.event.inputs.windows == 'true'}}
-      run: echo "Windows"
+    if: ${{github.event.inputs.windows == 'true'}}
+    runs-on: windows-latest
+    steps:
+      - run: echo "Windows"

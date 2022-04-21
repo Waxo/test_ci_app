@@ -26,3 +26,10 @@ jobs:
       with:
         name: release-android
         path: build
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        fail_on_unmatched_files: true
+        files: |
+          build/app/outputs/apk/release/app-release.apk
+          build/app/outputs/bundle/release/app-release.aab

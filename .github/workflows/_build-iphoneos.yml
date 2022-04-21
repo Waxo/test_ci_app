@@ -21,10 +21,10 @@ jobs:
       - run: flutter pub get
       - run: flutter build ios --release --no-codesign
       - run: |
-          APP_NAME=$(find $(pwd) -name "*.app")
-          PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
-          xcrun productbuild --component "$APP_NAME" /Applications/ unsigned.pkg
-
+          xcrun productbuild --component build/ios/iphoneos/Runner.app /Applications/ TestCIApp.pkg
+# APP_NAME=$(find $(pwd) -name "*.app")
+# PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
+# SWAGGY UNCOMMENTED LINE HERE
 # INSTALLER_CERT_NAME=$(keychain list-certificates \
 #           | jq '.[0]
 #             | select(.common_name
@@ -38,8 +38,8 @@ jobs:
         with:
           name: release-ios
           path: build
-    # - name: Release
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     fail_on_unmatched_files: true
-    #     files: build/ios/iphoneos/Runner.app
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          fail_on_unmatched_files: true
+          files: build/ios/iphoneos/TestCIApp.pkg

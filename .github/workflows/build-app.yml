@@ -2,19 +2,21 @@ name: Build apps
 
 on:
   push:
-    tags:
-      - v*
+    branches: main
+    # tags:
+    #   - v*
 
 jobs:
   macos:
     uses: ./.github/workflows/_build-macos.yml
+    secrets: inherit
 
   # iphoneos:
   #   uses: ./.github/workflows/_build-iphoneos.yml
 
-  windows:
-    uses: ./.github/workflows/_build-windows.yml
+  # windows:
+  #   uses: ./.github/workflows/_build-windows.yml
 
-  android:
-    uses: ./.github/workflows/_build-android.yml
+  # android:
+  #   uses: ./.github/workflows/_build-android.yml
     

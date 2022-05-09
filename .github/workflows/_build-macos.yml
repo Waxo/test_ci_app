@@ -1,39 +1,69 @@
 name: Build macOS
 
-on: workflow_call
+on: 
+  workflow_call:
+    secrets:
+      MACOS_CERT:
+        required: true
+      MACOS_CERT_PWD:
+        required: true
+      
 
 jobs:
   build:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '2.10.x'
-          architecture: x64
-          channel: stable
-          cache: true
-          cache-key: ${{runner.os}}-flutter-cache-2.10.x
-      - uses: actions/cache@v3
-        with:
-          path: /opt/hostedtoolcache/flutter
-          key: ${{runner.os}}-flutter-cache-2.10.x
-      - run: flutter pub get
-      - run: flutter config --enable-macos-desktop
-      - run: flutter build macos --release
-      - run: |
+      # - uses: subosito/flutter-action@v2
+      #   with:
+      #     flutter-version: '2.10.x'
+      #     architecture: x64
+      #     channel: stable
+      #     cache: true
+      #     cache-key: ${{runner.os}}-flutter-cache-2.10.x
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: /opt/hostedtoolcache/flutter
+      #     key: ${{runner.os}}-flutter-cache-2.10.x
+      # - run: flutter pub get
+      # - run: flutter config --enable-macos-desktop
+      # - run: flutter build macos --release
+      - name: Install certificates
+        env: 
+          CERT: ${{secrets.MACOS_CERT}}
+          P12_PASSWORD: ${{secrets.MACOS_CERT_PWD}}
+          KEYCHAIN_PASSWORD: 'localkeychainosefunpeu'
+        run: |
           APP_NAME=$(find $(pwd) -name "*.app")
           PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
-          xcrun productbuild --component "$APP_NAME" /Applications/ TestCIApp.pkg
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-# INSTALLER_CERT_NAME=$(keychain list-certificates \
-#           | jq '.[0]
-#             | select(.common_name
-#             | contains("Mac Developer Installer"))
-#             | .common_name' \
-#           | xargs)
-# xcrun productsign --sign "$INSTALLER_CERT_NAME" unsigned.pkg "$PACKAGE_NAME"
-# rm -f unsigned.pkg 
+          echo $CERTIFICATE_PATH
+          echo $CERT
+          echo $P12_PASSWORD
+          echo $KEYCHAIN_PATH
+          echo -n $CERT | base64 --decode --output $CERTIFICATE_PATH
+          
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # build
+          # xcrun productbuild --component "$APP_NAME" /Applications/ TestCIAppUnsigned.pkg
+
+          # INSTALLER_CERT_NAME=$(keychain list-certificates \
+          #           | jq '.[0]
+          #             | select(.common_name
+          #             | contains("Mac Developer Installer"))
+          #             | .common_name' \
+          #           | xargs)
+          # xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
+          # rm -f TestCIAppUnsigned.pkg 
+
       - name : Publish artifact
         uses: actions/upload-artifact@v3
         with:

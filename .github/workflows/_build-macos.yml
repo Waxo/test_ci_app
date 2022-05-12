@@ -14,6 +14,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '2.10.x'
@@ -21,6 +24,8 @@ jobs:
           channel: stable
           cache: true
           cache-key: ${{runner.os}}-flutter-cache-2.10.x
+      - name: Install codemagic-cli
+        run: pip3 install codemagic-cli-tools
       - uses: actions/cache@v3
         with:
           path: /opt/hostedtoolcache/flutter
@@ -60,7 +65,7 @@ jobs:
           echo "cert"
           echo $INSTALLER_CERT_NAME
           echo "cert2"
-          xcrun productsign --sign "AvekIA Technology" TestCIAppUnsigned.pkg TestCIApp.pkg
+          xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
           rm -f TestCIAppUnsigned.pkg 
 
       - name : Publish artifact

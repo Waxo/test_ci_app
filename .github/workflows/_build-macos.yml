@@ -64,11 +64,6 @@ jobs:
             --certificate-key=@file:$CERTIFICATE_KEY \
             --create
 
-          app-store-connect create-certificate \
-            --type MAC_INSTALLER_DISTRIBUTION \
-            --certificate-key=@file:$CERTIFICATE_KEY \
-            --save
-
           app-store-connect list-certificates \
             --type MAC_INSTALLER_DISTRIBUTION \
             --certificate-key=@file:$CERTIFICATE_KEY \
@@ -80,20 +75,21 @@ jobs:
 
           # build
           xcrun productbuild --component "$APP_NAME" /Applications/ TestCIAppUnsigned.pkg
-          # | contains("Mac Developer Installer"))
           INSTALLER_CERT_NAME=$(keychain list-certificates \
-                    | jq '.[0]
-                      | select(.common_name
-                      | contains("Mac Developer Installer"))
-                      | .common_name' \
-                    | xargs)
+            | jq '.[0]
+            | select(.common_name
+            | contains("Mac Developer Installer"))
+            | .common_name' \
+          | xargs)
+
           echo "cert"
           echo $INSTALLER_CERT_NAME
           echo "cert2"
+
           xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
           rm -f TestCIAppUnsigned.pkg
           app-store-connect publish \
-            --path "$PACKAGE_NAME"
+            --path "TestCIApp.pkg"
 
       - name : Publish artifact
         uses: actions/upload-artifact@v3

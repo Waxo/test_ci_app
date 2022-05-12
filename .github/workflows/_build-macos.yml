@@ -7,6 +7,12 @@ on:
         required: true
       MACOS_CERT_PWD:
         required: true
+      APP_STORE_CONNECT_ISSUER_ID:
+        required: true
+      APP_STORE_CONNECT_KEY_IDENTIFIER:
+        required: true
+      APP_STORE_CONNECT_PRIVATE_KEY:
+        required: true
       
 
 jobs:
@@ -38,6 +44,9 @@ jobs:
           CERT: ${{secrets.MACOS_CERT}}
           P12_PASSWORD: ${{secrets.MACOS_CERT_PWD}}
           KEYCHAIN_PASSWORD: 'localkeychainosefunpeu'
+          APP_STORE_CONNECT_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_ISSUER_ID}}
+          APP_STORE_CONNECT_KEY_IDENTIFIER: ${{secrets.APP_STORE_CONNECT_KEY_IDENTIFIER}}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{secrets.APP_STORE_CONNECT_PRIVATE_KEY}}
         run: |
           APP_NAME=$(find $(pwd) -name "*.app")
           PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
@@ -52,21 +61,23 @@ jobs:
 
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
-
+          keychain list-certificates
           # build
           xcrun productbuild --component "$APP_NAME" /Applications/ TestCIAppUnsigned.pkg
-
+          # | contains("Mac Developer Installer"))
           INSTALLER_CERT_NAME=$(keychain list-certificates \
                     | jq '.[0]
                       | select(.common_name
-                      | contains("Mac Developer Installer"))
+                      | contains("Apple Distribution"))
                       | .common_name' \
                     | xargs)
           echo "cert"
           echo $INSTALLER_CERT_NAME
           echo "cert2"
           xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
-          rm -f TestCIAppUnsigned.pkg 
+          rm -f TestCIAppUnsigned.pkg
+          app-store-connect publish \
+            --path "$PACKAGE_NAME"
 
       - name : Publish artifact
         uses: actions/upload-artifact@v3

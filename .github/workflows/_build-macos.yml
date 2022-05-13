@@ -82,7 +82,7 @@ jobs:
           PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
 
           xcrun productbuild --component "$APP_NAME" /Applications/ TestCIAppUnsigned.pkg
-          
+
           keychain list-certificates
 
           INSTALLER_CERT_NAME=$(keychain list-certificates \
@@ -91,10 +91,6 @@ jobs:
               | contains("Mac Developer Installer"))
               | .common_name' \
             | xargs)
-
-          echo "cert"
-          echo $INSTALLER_CERT_NAME
-          echo "cert2"
 
           xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
           rm -f TestCIAppUnsigned.pkg

@@ -83,8 +83,6 @@ jobs:
 
           xcrun productbuild --component "$APP_NAME" /Applications/ TestCIAppUnsigned.pkg
 
-          keychain list-certificates
-
           INSTALLER_CERT_NAME=$(keychain list-certificates \
             | jq '.[0]
               | select(.common_name

@@ -7,12 +7,13 @@ on:
       - v*
 
 jobs:
-  macos:
-    uses: ./.github/workflows/_build-macos.yml
-    secrets: inherit
+  # macos:
+  #   uses: ./.github/workflows/_build-macos.yml
+  #   secrets: inherit
 
-  # iphoneos:
-  #   uses: ./.github/workflows/_build-iphoneos.yml
+  iphoneos:
+    uses: ./.github/workflows/_build-iphoneos.yml
+    secrets: inherit
 
   # windows:
   #   uses: ./.github/workflows/_build-windows.yml

@@ -1,12 +1,38 @@
 name: Build iOS
 
-on: workflow_call
+on: 
+  workflow_call:
+    secrets:
+      MACOS_CERT:
+        required: true
+      MACOS_CERT_PWD:
+        required: true
+      APP_STORE_CONNECT_ISSUER_ID:
+        required: true
+      APP_STORE_CONNECT_KEY_IDENTIFIER:
+        required: true
+      APP_STORE_CONNECT_PRIVATE_KEY:
+        required: true
 
 jobs:
   build:
     runs-on: macos-latest
+
+    env:
+      CERTIFICATE_STRING: ${{ secrets.MACOS_CERT }}
+      P12_PASSWORD: ${{ secrets.MACOS_CERT_PWD }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+
     steps:
       - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '2.10.x'
@@ -14,17 +40,46 @@ jobs:
           channel: stable
           cache: true
           cache-key: ${{runner.os}}-flutter-cache-2.10.x
-      - uses: actions/cache@v3
-        with:
-          path: /opt/hostedtoolcache/flutter
-          key: ${{runner.os}}-flutter-cache-2.10.x
+
+      - name: Install codemagic-cli
+        run: pip install -r requirements.txt
+
+      - name: Install certificates
+        run: |
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          CERTIFICATE_KEY=$RUNNER_TEMP/cert_key
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          echo -n $CERTIFICATE_STRING | base64 --decode --output $CERTIFICATE_PATH
+
+          openssl pkcs12 -in $CERTIFICATE_PATH -password pass:$P12_PASSWORD -nodes -nocerts | openssl rsa -out $CERTIFICATE_KEY
+
+          app-store-connect fetch-signing-files fr.avekia.avekiatestci \
+            --platform IOS \
+            --type IOS_APP_STORE \
+            --certificate-key=@file:$CERTIFICATE_KEY \
+            --create
+
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
+
       - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
+
+      - name: Build app
+        run: flutter build ipa --release \
+          --export-options-plist=$HOME/export_options.plist
+
       - name : Publish artifact
         uses: actions/upload-artifact@v3
         with:
           name: release-ios
           path: build
+      
+      - name: Deploy app
+        run: app-store-connect publish \
+          --path $(find $(pwd) -name "*.ipa")       
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

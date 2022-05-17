@@ -2,6 +2,9 @@ name: Build iOS
 
 on: 
   workflow_call:
+    inputs:
+      deploy:
+        type: boolean
     secrets:
       MACOS_CERT:
         required: true
@@ -77,26 +80,16 @@ jobs:
 
       - run: flutter pub get
 
-      - name: DEBUG
-        run: ls $HOME/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: DEBUG
-        run: cat $HOME/export_options.plist
-
       - name: Build app
         run: flutter build ipa --release --export-options-plist=$HOME/export_options.plist
-
-      - name : Publish artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: release-ios
-          path: build
       
       - name: Deploy app
+        if: ${{ inputs.deploy == true }}
         run: app-store-connect publish
 
       - name: Release
+        if: ${{ inputs.deploy != true }}
         uses: softprops/action-gh-release@v1
         with:
           fail_on_unmatched_files: true
-          files: TestCIApp.pkg
+          files: test_ci_app.ipa

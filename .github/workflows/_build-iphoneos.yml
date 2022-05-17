@@ -74,7 +74,6 @@ jobs:
           keychain initialize
           keychain add-certificates
           xcode-project use-profiles
-          flutter build ipa --release --export-options-plist=$HOME/export_options.plist
 
       - run: flutter pub get
 
@@ -94,8 +93,7 @@ jobs:
           path: build
       
       - name: Deploy app
-        run: app-store-connect publish \
-          --path $(find $(pwd) -name "*.ipa")       
+        run: app-store-connect publish
 
       - name: Release
         uses: softprops/action-gh-release@v1

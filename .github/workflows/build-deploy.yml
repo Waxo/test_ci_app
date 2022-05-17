@@ -1,18 +1,23 @@
-name: Build apps
+name: Build and deploy apps
 
 on:
   push:
     tags:
-      - v*-rc*
+      - v*
+      - '!v*-rc*'
 
 jobs:
   macos:
     uses: ./.github/workflows/_build-macos.yml
     secrets: inherit
+    with:
+      deploy: true
 
   iphoneos:
     uses: ./.github/workflows/_build-iphoneos.yml
     secrets: inherit
+    with:
+      deploy: true
 
   # windows:
   #   uses: ./.github/workflows/_build-windows.yml

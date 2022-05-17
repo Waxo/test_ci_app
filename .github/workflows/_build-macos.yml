@@ -2,6 +2,9 @@ name: Build macOS
 
 on: 
   workflow_call:
+    inputs:
+      deploy:
+        type: boolean
     secrets:
       MACOS_CERT:
         required: true
@@ -89,15 +92,16 @@ jobs:
               | contains("Mac Developer Installer"))
               | .common_name' \
             | xargs)
-
           xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
           rm -f TestCIAppUnsigned.pkg
-          app-store-connect publish \
-            --path "TestCIApp.pkg"
+
+      - name: Deploy app
+        if: ${{ inputs.deploy == true }}
+        run: app-store-connect publish
 
       - name: Release
+        if: ${{ inputs.deploy != true }}
         uses: softprops/action-gh-release@v1
         with:
           fail_on_unmatched_files: true
           files: TestCIApp.pkg
-          

@@ -3,22 +3,26 @@ name: Deploy apps
 on:
   deployment:
 
-concurrency:
-  group: production
-  cancel-in-progress: true
+# concurrency:
+#   group: production
+#   cancel-in-progress: true
 
 jobs:
   deploy-macos:
+    name: Deploy MacOS
     uses: ./.github/workflows/_build-macos.yml
     secrets: inherit
     with:
       deploy: true
+      environment: production
 
   deploy-iphoneos:
+    name: Deploy iOS
     uses: ./.github/workflows/_build-iphoneos.yml
     secrets: inherit
     with:
       deploy: true
+      environment: production
 
   # windows:
   #   uses: ./.github/workflows/_build-windows.yml
@@ -27,6 +31,7 @@ jobs:
   #   uses: ./.github/workflows/_build-android.yml
     
   post-deployment-success:
+    name: Deployment success
     needs: [deploy-macos, deploy-iphoneos]
     if: success()
     runs-on: ubuntu-latest
@@ -46,6 +51,7 @@ jobs:
           deployment_id: ${{ github.event.deployment.id }}
 
   post-deployment-failure:
+    name: Deployment failure
     needs: [deploy-macos, deploy-iphoneos]
     if: failure()
     runs-on: ubuntu-latest

@@ -1,19 +1,20 @@
-name: Build and deploy apps
+name: Deploy apps
 
 on:
-  push:
-    tags:
-      - v*
-      - '!v*-rc*'
+  deployment:
+
+concurrency:
+  group: production
+  cancel-in-progress: true
 
 jobs:
-  macos:
+  deploy-macos:
     uses: ./.github/workflows/_build-macos.yml
     secrets: inherit
     with:
       deploy: true
 
-  iphoneos:
+  deploy-iphoneos:
     uses: ./.github/workflows/_build-iphoneos.yml
     secrets: inherit
     with:

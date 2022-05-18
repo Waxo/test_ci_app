@@ -5,6 +5,9 @@ on:
     inputs:
       deploy:
         type: boolean
+      environment:
+        type: string
+
     secrets:
       MACOS_CERT:
         required: true
@@ -20,6 +23,8 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    
+    environment: ${{ inputs.environment }}
 
     env:
       CERTIFICATE_STRING: ${{ secrets.IOS_CERTIFICATE }}

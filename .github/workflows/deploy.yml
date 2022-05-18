@@ -11,12 +11,16 @@ jobs:
   deploy-macos:
     uses: ./.github/workflows/_build-macos.yml
     secrets: inherit
+    environment:
+      name: production
     with:
       deploy: true
 
   deploy-iphoneos:
     uses: ./.github/workflows/_build-iphoneos.yml
     secrets: inherit
+    environment:
+      name: production
     with:
       deploy: true
 
@@ -26,7 +30,7 @@ jobs:
   # android:
   #   uses: ./.github/workflows/_build-android.yml
     
-  deployment-cooloff:
+  post-deployment:
     needs: [deploy-macos, deploy-iphoneos]
     if: ${{ always() }}
     runs-on: ubuntu-latest

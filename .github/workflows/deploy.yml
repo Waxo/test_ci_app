@@ -11,16 +11,12 @@ jobs:
   deploy-macos:
     uses: ./.github/workflows/_build-macos.yml
     secrets: inherit
-    environment:
-      name: production
     with:
       deploy: true
 
   deploy-iphoneos:
     uses: ./.github/workflows/_build-iphoneos.yml
     secrets: inherit
-    environment:
-      name: production
     with:
       deploy: true
 

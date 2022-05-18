@@ -3,7 +3,7 @@ name: Build and prepare deploys
 on:
   push:
     tags:
-      - v*-rc*
+      - v*
 
 jobs:
   macos:

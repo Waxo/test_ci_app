@@ -26,3 +26,27 @@ jobs:
   # android:
   #   uses: ./.github/workflows/_build-android.yml
     
+  deployment-cooloff:
+    needs: [deploy-macos, deploy-iphoneos]
+    - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v1
+        with:
+          application_id: ${{ secrets.APPLICATION_ID }}
+          application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
+
+    - name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: ${{ steps.get_workflow_token.outputs.token }}
+        state: "success"
+        deployment_id: ${{ github.event.deployment.id }}
+
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: ${{ steps.get_workflow_token.outputs.token }}
+        state: "failure"
+        deployment_id: ${{ github.event.deployment.id }}

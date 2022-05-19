@@ -7,6 +7,9 @@ on:
         type: boolean
       environment:
         type: string
+      debug:
+        type: boolean
+
     secrets:
       MACOS_CERT:
         required: true
@@ -19,8 +22,7 @@ on:
       APP_STORE_CONNECT_PRIVATE_KEY:
         required: true
 
-
-      
+    
 jobs:
   build:
     name: Build .pkg
@@ -98,6 +100,13 @@ jobs:
             | xargs)
           xcrun productsign --sign "$INSTALLER_CERT_NAME" TestCIAppUnsigned.pkg TestCIApp.pkg
           rm -f TestCIAppUnsigned.pkg
+
+      - name : Publish artifact
+        if: ${{ inputs.debug == true }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos
+          path: build
 
       - name: Deploy app
         if: ${{ inputs.deploy == true }}

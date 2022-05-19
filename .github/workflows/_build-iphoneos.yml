@@ -7,6 +7,8 @@ on:
         type: boolean
       environment:
         type: string
+      debug:
+        type: boolean
 
     secrets:
       MACOS_CERT:
@@ -19,6 +21,7 @@ on:
         required: true
       APP_STORE_CONNECT_PRIVATE_KEY:
         required: true
+
 
 jobs:
   build:
@@ -87,6 +90,13 @@ jobs:
 
       - name: Build app
         run: flutter build ipa --release --export-options-plist=$HOME/export_options.plist
+
+      - name : Publish artifact
+        if: ${{ inputs.debug == true }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-ios
+          path: build
       
       - name: Deploy app
         if: ${{ inputs.deploy == true }}

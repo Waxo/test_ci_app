@@ -43,6 +43,3 @@ jobs:
           token: "${{ env.GITHUB_TOKEN }}"
           environment: production
           description: "${{ github.event.head_commit.message }}"
-      
-
-    
